@@ -1,0 +1,11 @@
+.DS_Store
+Podfile.lock
+Pods/
+adab/.DS_Store
+adab/Assets.xcassets/.DS_Store
+adab/View/.DS_Store
+adab.xcodeproj/project.xcworkspace/xcshareddata/
+adab.xcodeproj/xcuserdata/
+adab.xcodeproj/project.xcworkspace/xcuserdata/
+adab.xcworkspace/xcshareddata/
+adab.xcworkspace/xcuserdata/
