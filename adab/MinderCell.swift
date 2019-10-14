@@ -45,6 +45,7 @@ class MinderCell: UITableViewCell {
     @IBOutlet weak var strengthenButton: UIButton!
     @IBOutlet weak var healthBar: UIProgressView!
     @IBOutlet weak var healthContainerView: UIView!
+    @IBOutlet weak var regularityLabel: UILabel!
     
     
     func setHealthBar(to progress: Float, animated: Bool = false, color: UIColor) {

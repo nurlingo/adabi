@@ -17,6 +17,7 @@
 		B75EC1DE23469DD800F76103 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B75EC1DD23469DD800F76103 /* Colors.swift */; };
 		B75EC1E52348406800F76103 /* Adab.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B75EC1E32348406800F76103 /* Adab.xcdatamodeld */; };
 		B75EC1E72348415B00F76103 /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B75EC1E62348415B00F76103 /* CoreDataHelper.swift */; };
+		B7704A252354391C00C91547 /* Minder+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7704A242354391C00C91547 /* Minder+.swift */; };
 		B7AC233623484C8200A0E254 /* UIButton+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AC233523484C8200A0E254 /* UIButton+.swift */; };
 		B7AC23382348574F00A0E254 /* Hadith.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AC23372348574F00A0E254 /* Hadith.swift */; };
 		B7AC233A23485FC000A0E254 /* NewMinderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AC233923485FC000A0E254 /* NewMinderController.swift */; };
@@ -39,6 +40,7 @@
 		B75EC1DD23469DD800F76103 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		B75EC1E42348406800F76103 /* Minder.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Minder.xcdatamodel; sourceTree = "<group>"; };
 		B75EC1E62348415B00F76103 /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
+		B7704A242354391C00C91547 /* Minder+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Minder+.swift"; sourceTree = "<group>"; };
 		B7AC233523484C8200A0E254 /* UIButton+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+.swift"; sourceTree = "<group>"; };
 		B7AC23372348574F00A0E254 /* Hadith.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hadith.swift; sourceTree = "<group>"; };
 		B7AC233923485FC000A0E254 /* NewMinderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMinderController.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				B75EC1C12346835A00F76103 /* AppDelegate.swift */,
 				B75EC1D9234685E000F76103 /* Main.storyboard */,
 				B75EC1D5234683D100F76103 /* MinderController.swift */,
+				B7704A242354391C00C91547 /* Minder+.swift */,
 				B75EC1D7234684BF00F76103 /* MinderCell.swift */,
 				B7AC233923485FC000A0E254 /* NewMinderController.swift */,
 				B75EC1E62348415B00F76103 /* CoreDataHelper.swift */,
@@ -185,6 +188,7 @@
 			files = (
 				B7AC2342234912D500A0E254 /* Emoji.swift in Sources */,
 				B7AC233A23485FC000A0E254 /* NewMinderController.swift in Sources */,
+				B7704A252354391C00C91547 /* Minder+.swift in Sources */,
 				B75EC1E72348415B00F76103 /* CoreDataHelper.swift in Sources */,
 				B7AC23382348574F00A0E254 /* Hadith.swift in Sources */,
 				B7AC233623484C8200A0E254 /* UIButton+.swift in Sources */,

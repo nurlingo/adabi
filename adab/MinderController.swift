@@ -26,18 +26,13 @@ class MinderController: UIViewController {
         self.navigationController?.navigationBar.shadowImage = UIImage()
         
         minders = CoreDataHelper.retrieveMinders()
+        sortMinders()
         
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        tableView.reloadData()
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadTable), name: UIApplication.willEnterForegroundNotification, object: nil)
+        
     }
     
     @objc func strengthenButtonPressed(sender : UIButton){
-        
-        guard !tableView.isEditing else {return}
-        
-        
         
         let minder = minders[sender.tag]
         minder.doneDate = Date()
@@ -98,10 +93,15 @@ class MinderController: UIViewController {
         
     }
     
-    @IBAction func editButtonPressed(_ sender: UIBarButtonItem) {
-        
-        tableView.setEditing(!tableView.isEditing, animated: true) // Set opposite value of current editing status
-        sender.title = tableView.isEditing ? "Done" : "Edit" // Set title depending on the editing status
+    func sortMinders() {
+        minders.sort(by: { $0.title! < $1.title! })
+        minders.sort(by: { $0.health < $1.health })
+        minders.sort(by: { $0.sortingOrder < $1.sortingOrder })
+    }
+    
+    @objc func reloadTable() {
+        sortMinders()
+        tableView.reloadData()
     }
     
     func setupMinder(at indexPath: IndexPath? = nil) {
@@ -137,6 +137,7 @@ class MinderController: UIViewController {
         alert.addTextField(configurationHandler: { textField in
             textField.placeholder = "Title"
             textField.text = minder.title
+            textField.autocapitalizationType = .sentences
         })
         
         let regularityInts: [Int16] = [0,1,2,3,7,14,28]
@@ -195,11 +196,12 @@ class MinderController: UIViewController {
     }
     
     @IBAction func addButtonPressed(_ sender: Any) {
-        
-        guard !tableView.isEditing else {return}
         setupMinder()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
 
 }
@@ -221,7 +223,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             print(cell.tag)
             cell.tag = abs(cell.tag - 1)
             print(cell.tag)
-        } else if !tableView.isEditing && indexPath.section == 1 {
+        } else {
             setupMinder(at: indexPath)
         }
     }
@@ -238,7 +240,8 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         let minder = minders[indexPath.row]
         
         
-        cell.titleLabel.text = minder.title! + (minder.isOneTime ? "" : " | \(minder.regularity)")
+        cell.titleLabel.text = minder.title!
+        cell.regularityLabel.text = minder.howOften
         cell.setHealthBar(to: minder.health, color: minder.color)
         
         cell.strengthenButton.tag = indexPath.row
@@ -250,67 +253,16 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        
-        return tableView.isEditing && indexPath.section > 0
+        return indexPath.section > 0
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
         if editingStyle == .delete {
-            
             let minderToDelete = minders[indexPath.row]
             CoreDataHelper.delete(minder: minderToDelete)
             self.minders.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
-}
-
-extension Minder {
-    
-    var isOneTime: Bool {
-        return regularity == 0
-    }
-    
-    var health: Float {
-        
-        guard let doneDate = self.doneDate, regularity > 0 else { return 0 }
-        
-        let calendar = NSCalendar.current
-        let components = calendar.dateComponents([.hour], from: doneDate, to: Date())
-        let hoursPassedSinceDone = Float(components.hour!)
-        
-        let regularityInHours = Float(self.regularity * 24)
-        let onePercent: Float = 1.0 / regularityInHours
-        
-        let hoursLeftToTakeAction = regularityInHours - hoursPassedSinceDone
-        
-        let healthPercentage = onePercent * hoursLeftToTakeAction
-
-        return max(healthPercentage,0.05)
-    }
-    
-    var color: UIColor {
-        
-        if regularity == 0 || doneDate == nil {
-            return .clear
-        }
-        
-        switch health {
-        case 0.85...1.0:
-            let green = UIColor.rgb(70, 156, 115)
-            return green
-        case 0.5..<0.85:
-            let yellow = UIColor.rgb(233,159,64)
-            return yellow
-        case 0.25..<0.5:
-            let orange = UIColor.rgb(245,113,65)
-            return orange
-        case 0..<0.25:
-            return .systemRed
-        default:
-            return .clear
-        }
-    }
-    
 }
