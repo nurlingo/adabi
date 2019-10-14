@@ -1,5 +1,5 @@
 //
-//  NewMinderController.swift
+//  NewMinderAlert.swift
 //  adab
 //
 //  Created by Daniya on 05/10/2019.

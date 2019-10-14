@@ -8,13 +8,6 @@
 
 import UIKit
 
-struct Screen {
-    
-    static let bounds = UIScreen.main.bounds
-    static let width = UIScreen.main.bounds.width
-    static let height = UIScreen.main.bounds.height
-}
-
 extension UIColor {
     static func rgb(_ red: CGFloat, _ green: CGFloat, _ blue: CGFloat) -> UIColor {
         return UIColor(red: red/255, green: green/255, blue: blue/255, alpha: 1)

@@ -32,13 +32,12 @@ class MinderController: UIViewController {
         
     }
     
-    @objc func strengthenButtonPressed(sender : UIButton){
+    func strengthenMinder(at indexPath: IndexPath){
         
-        let minder = minders[sender.tag]
+        let minder = minders[indexPath.row]
         minder.doneDate = Date()
         CoreDataHelper.save()
         
-        let indexPath = IndexPath(row: sender.tag, section: 1)
         let cell = tableView.cellForRow(at: indexPath) as! MinderCell
         
         if minder.regularity > 0 {
@@ -46,7 +45,6 @@ class MinderController: UIViewController {
         } else {
             cell.setHealthBar(to: 1.0, animated: true, color: .ocean)
         }
-        
         
         // play mashaAllah sound
         let doneSounds = ["mashaAllah", "ahsant"]
@@ -62,7 +60,7 @@ class MinderController: UIViewController {
             
             // it's done so remove
             CoreDataHelper.delete(minder: minder)
-            minders.remove(at: sender.tag)
+            minders.remove(at: indexPath.row)
             
             DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
                 self.tableView.deleteRows(at: [indexPath], with: .fade)
@@ -142,22 +140,7 @@ class MinderController: UIViewController {
         
         let regularityInts: [Int16] = [0,1,2,3,7,14,28]
         let regularityStrings: [String] = regularityInts.map {
-            switch $0 {
-            case 1:
-               return "Everyday"
-            case 2:
-                return "Every other day"
-            case 3:
-                return "Twice a week"
-            case 7:
-                return "Weekly"
-            case 14:
-                return "Biweekly"
-            case 28:
-                return "Monthly"
-            default:
-                return "Just once"
-            }
+            $0.regularity
         }
             
         let regularitySelectedValue: PickerViewViewController.Index = (column: 0, row: regularityInts.firstIndex(of: regularity) ?? 0)
@@ -178,9 +161,16 @@ class MinderController: UIViewController {
 
                 CoreDataHelper.save()
                 
-                if newMinder {
+                if newMinder && regularity > 0 {
                     self?.minders.append(minder)
                     let indexPath = IndexPath(row: (self?.minders.count ?? 1)-1, section: 1)
+                    self?.tableView.insertRows(at: [indexPath], with: .automatic)
+                    self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                } else if newMinder {
+                    self?.minders.reverse()
+                    self?.minders.append(minder)
+                    self?.minders.reverse()
+                    let indexPath = IndexPath(row: 0, section: 1)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 } else {
@@ -220,11 +210,9 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
             let cell =  tableView.cellForRow(at: indexPath)!
-            print(cell.tag)
             cell.tag = abs(cell.tag - 1)
-            print(cell.tag)
         } else {
-            setupMinder(at: indexPath)
+            strengthenMinder(at: indexPath)
         }
     }
     
@@ -243,18 +231,13 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         cell.titleLabel.text = minder.title!
         cell.regularityLabel.text = minder.howOften
         cell.setHealthBar(to: minder.health, color: minder.color)
-        
-        cell.strengthenButton.tag = indexPath.row
-        cell.strengthenButton.addTarget(self,
-               action: #selector(strengthenButtonPressed),
-               for: .touchUpInside)
-                
         return cell
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return indexPath.section > 0
     }
+    
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         
@@ -263,6 +246,22 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             CoreDataHelper.delete(minder: minderToDelete)
             self.minders.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
+        } else if editingStyle == .insert {
+            
         }
+    }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let editTitle = NSLocalizedString("Edit", comment: "Edit action")
+        let editAction = UIContextualAction(style: .normal,
+        title: editTitle) { (action, view, completionHandler) in
+          self.setupMinder(at: indexPath)
+          completionHandler(true)
+        }
+        
+        editAction.backgroundColor = .lightGray
+        let configuration = UISwipeActionsConfiguration(actions: [editAction])
+        return configuration
     }
 }

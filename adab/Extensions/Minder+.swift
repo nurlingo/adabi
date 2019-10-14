@@ -63,24 +63,22 @@ extension Minder {
     
     var color: UIColor {
         
-        if regularity == 0 || doneDate == nil {
-            return .clear
+        if regularity == 0 {
+            return .ocean
         }
         
         switch health {
-        case 0.8...1.0:
-            let green = UIColor.rgb(70, 156, 115)
-            return green
         case 0.45..<0.8:
             let yellow = UIColor.rgb(233,159,64)
             return yellow
         case 0.1..<0.45:
             let orange = UIColor.rgb(245,113,65)
             return orange
-        case 0..<0.1:
+        case 0.05..<0.1:
             return .systemRed
         default:
-            return .clear
+            let green = UIColor.rgb(70, 156, 115)
+            return green
         }
     }
     

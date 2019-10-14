@@ -121,28 +121,11 @@
                                                                 <constraint firstItem="Odv-PZ-x3p" firstAttribute="leading" secondItem="mgd-Go-Ulh" secondAttribute="leading" id="ix8-U1-i7g"/>
                                                             </constraints>
                                                         </view>
-                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qnr-M1-jsH">
-                                                            <rect key="frame" x="354" y="9" width="60" height="47"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="60" id="7fj-Vf-Y8H"/>
-                                                            </constraints>
-                                                            <fontDescription key="fontDescription" name="Farah" family="Farah" pointSize="35"/>
-                                                            <color key="tintColor" red="0.99607843139999996" green="0.99607843139999996" blue="0.88235294119999996" alpha="1" colorSpace="calibratedRGB"/>
-                                                            <state key="normal" title="ف">
-                                                                <color key="titleColor" red="0.99607843139999996" green="0.99607843139999996" blue="0.88235294119999996" alpha="1" colorSpace="calibratedRGB"/>
-                                                            </state>
-                                                            <state key="selected" title="◉"/>
-                                                            <state key="highlighted" title="◉">
-                                                                <color key="titleColor" red="0.99607843139999996" green="0.99607843139999996" blue="0.88235294119999996" alpha="1" colorSpace="calibratedRGB"/>
-                                                            </state>
-                                                        </button>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstItem="Ekc-DU-BAC" firstAttribute="top" secondItem="jdS-IX-zYP" secondAttribute="top" constant="4" id="Ffh-P8-p1N"/>
                                                         <constraint firstAttribute="trailing" secondItem="Ekc-DU-BAC" secondAttribute="trailing" constant="8" id="JwA-Fb-le8"/>
-                                                        <constraint firstAttribute="trailing" secondItem="Qnr-M1-jsH" secondAttribute="trailing" id="MEv-mI-rqx"/>
-                                                        <constraint firstItem="Qnr-M1-jsH" firstAttribute="centerY" secondItem="jdS-IX-zYP" secondAttribute="centerY" id="a4K-gZ-9zl"/>
                                                         <constraint firstItem="Ekc-DU-BAC" firstAttribute="centerY" secondItem="jdS-IX-zYP" secondAttribute="centerY" id="hYK-Dn-rDl"/>
                                                         <constraint firstItem="Ekc-DU-BAC" firstAttribute="leading" secondItem="jdS-IX-zYP" secondAttribute="leading" constant="8" id="jfO-Z3-ggv"/>
                                                     </constraints>
@@ -152,7 +135,6 @@
                                                     <outlet property="healthBar" destination="0g3-gj-aJc" id="TXe-Aj-orx"/>
                                                     <outlet property="healthContainerView" destination="Ekc-DU-BAC" id="278-Ve-ptc"/>
                                                     <outlet property="regularityLabel" destination="Odv-PZ-x3p" id="dBY-Xt-zB9"/>
-                                                    <outlet property="strengthenButton" destination="Qnr-M1-jsH" id="XnR-de-7t4"/>
                                                     <outlet property="titleLabel" destination="mgd-Go-Ulh" id="mIM-eV-VBN"/>
                                                 </connections>
                                             </tableViewCell>

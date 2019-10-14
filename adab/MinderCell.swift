@@ -42,7 +42,6 @@ class ReminderCell: UITableViewCell {
 class MinderCell: UITableViewCell {
 
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var strengthenButton: UIButton!
     @IBOutlet weak var healthBar: UIProgressView!
     @IBOutlet weak var healthContainerView: UIView!
     @IBOutlet weak var regularityLabel: UILabel!
