@@ -29,7 +29,11 @@ extension Minder {
         case 28:
             return "Monthly"
         default:
-            return ""
+            
+            let dateFormatterPrint = DateFormatter()
+            dateFormatterPrint.dateFormat = "MMM dd, HH:mm"
+            
+            return doneDate == nil ? "" : dateFormatterPrint.string(from: doneDate!)
         }
     }
     
@@ -37,9 +41,9 @@ extension Minder {
         if isOneTime {
             return 0
         } else if doneDate == nil {
-            return 2
-        } else {
             return 1
+        } else {
+            return 2
         }
     }
     
@@ -64,7 +68,7 @@ extension Minder {
     var color: UIColor {
         
         if regularity == 0 {
-            return .ocean
+            return .systemTeal
         }
         
         switch health {

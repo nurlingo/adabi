@@ -102,31 +102,105 @@ class MinderController: UIViewController {
         tableView.reloadData()
     }
     
-    func setupMinder(at indexPath: IndexPath? = nil) {
+    func setupTodo(at indexPath: IndexPath? = nil) {
         
-        let newMinder = (indexPath == nil)
+        let isNewTodo = (indexPath == nil)
         
-        let minder: Minder
+        let todo: Minder
+        
+        let alertTitle: String
+        let alertMessage: String
+        
+        if isNewTodo {
+            
+            todo = CoreDataHelper.newMinder()
+            alertTitle = "Create a To Do"
+            alertMessage = "Choose a title and due date"
+            
+        } else {
+            todo = minders[indexPath!.row]
+            alertTitle = "Edit the To Do"
+            alertMessage = "You can change the title and due date"
+        }
+
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+        
+        var newDate = todo.doneDate
+        
+        alert.addDatePicker(date: todo.doneDate, minimumDate: min(Date(),todo.doneDate ?? Date()), maximumDate: nil) { date in
+            print(date)
+            newDate = date
+        }
+        
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Title"
+            textField.text = todo.title
+            textField.autocapitalizationType = .sentences
+        })
+        
+        alert.addAction(UIAlertAction(title: "Bismillah", style: .default, handler: { [weak self] action in
+
+            if let title = alert.textFields?.first?.text {
+                
+                todo.title = title
+                todo.doneDate = newDate
+
+                CoreDataHelper.save()
+                
+                if isNewTodo {
+                    self?.minders.reverse()
+                    self?.minders.append(todo)
+                    self?.minders.reverse()
+                    let indexPath = IndexPath(row: 0, section: 1)
+                    self?.tableView.insertRows(at: [indexPath], with: .automatic)
+                    self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                } else {
+                    self?.tableView.reloadRows(at: [indexPath!], with: .automatic)
+                }
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        self.present(alert, animated: true)
+    }
+    
+    func editMinder(at indexPath: IndexPath) {
+        
+        let minder = minders[indexPath.row]
+        if minder.regularity > 0 {
+            setupHabit(at: indexPath)
+        } else {
+            setupTodo(at: indexPath)
+        }
+        
+    }
+    
+    func setupHabit(at indexPath: IndexPath? = nil) {
+        
+        let isNewHabit = (indexPath == nil)
+        
+        let habit: Minder
         var regularity: Int16 = 0
         var doneDate: Date?
         
         let alertTitle: String
         let alertMessage: String
         
-        if newMinder {
+        if isNewHabit {
             
-            minder = CoreDataHelper.newMinder()
+            habit = CoreDataHelper.newMinder()
             
-            alertTitle = "Create a minder"
-            alertMessage = "Choose title and regularity in days"
+            alertTitle = "Create a Habit"
+            alertMessage = "Choose a title and regularity in days"
             
         } else {
-            minder = minders[indexPath!.row]
-            regularity = minder.regularity
-            doneDate = minder.doneDate
+            habit = minders[indexPath!.row]
+            regularity = habit.regularity
+            doneDate = habit.doneDate
             
-            alertTitle = "Edit the minder"
-            alertMessage = "You can change title and regularity"
+            alertTitle = "Edit the Habit"
+            alertMessage = "You can change the title and regularity"
         }
         
         
@@ -134,7 +208,7 @@ class MinderController: UIViewController {
         
         alert.addTextField(configurationHandler: { textField in
             textField.placeholder = "Title"
-            textField.text = minder.title
+            textField.text = habit.title
             textField.autocapitalizationType = .sentences
         })
         
@@ -155,20 +229,15 @@ class MinderController: UIViewController {
 
             if let title = alert.textFields?.first?.text {
                 
-                minder.title = title
-                minder.regularity = regularity
-                minder.doneDate = doneDate
+                habit.title = title
+                habit.regularity = regularity
+                habit.doneDate = doneDate
 
                 CoreDataHelper.save()
                 
-                if newMinder && regularity > 0 {
-                    self?.minders.append(minder)
-                    let indexPath = IndexPath(row: (self?.minders.count ?? 1)-1, section: 1)
-                    self?.tableView.insertRows(at: [indexPath], with: .automatic)
-                    self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-                } else if newMinder {
+                if isNewHabit {
                     self?.minders.reverse()
-                    self?.minders.append(minder)
+                    self?.minders.append(habit)
                     self?.minders.reverse()
                     let indexPath = IndexPath(row: 0, section: 1)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
@@ -185,8 +254,13 @@ class MinderController: UIViewController {
         
     }
     
-    @IBAction func addButtonPressed(_ sender: Any) {
-        setupMinder()
+    
+    @IBAction func todoButtonPressed(_ sender: Any) {
+        setupTodo()
+    }
+    
+    @IBAction func minderButtonPressed(_ sender: Any) {
+        setupHabit()
     }
     
     deinit {
@@ -256,7 +330,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         let editTitle = NSLocalizedString("Edit", comment: "Edit action")
         let editAction = UIContextualAction(style: .normal,
         title: editTitle) { (action, view, completionHandler) in
-          self.setupMinder(at: indexPath)
+          self.editMinder(at: indexPath)
           completionHandler(true)
         }
         
