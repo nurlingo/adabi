@@ -14,14 +14,14 @@ extension Minder {
         return regularity == 0
     }
     
-    var howOften: String {
+    var when: String {
         switch regularity {
         case 1:
-           return "Everyday"
+           return "Daily"
         case 2:
-            return "Every other day"
+            return "Every\nother day"
         case 3:
-            return "Twice a week"
+            return "Twice\na week"
         case 7:
             return "Weekly"
         case 14:
@@ -29,10 +29,8 @@ extension Minder {
         case 28:
             return "Monthly"
         default:
-            
             let dateFormatterPrint = DateFormatter()
-            dateFormatterPrint.dateFormat = "MMM dd, HH:mm"
-            
+            dateFormatterPrint.dateFormat = "MMM dd"
             return doneDate == nil ? "" : dateFormatterPrint.string(from: doneDate!)
         }
     }
@@ -41,9 +39,9 @@ extension Minder {
         if isOneTime {
             return 0
         } else if doneDate == nil {
-            return 1
-        } else {
             return 2
+        } else {
+            return 1
         }
     }
     

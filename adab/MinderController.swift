@@ -17,6 +17,7 @@ class MinderController: UIViewController {
     fileprivate let minderCellId = "minderCellId"
     fileprivate let reminderCellId = "reminderCellId"
     fileprivate var minders = [Minder]()
+    fileprivate var ideas = [Idea]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +26,8 @@ class MinderController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         self.navigationController?.navigationBar.shadowImage = UIImage()
         
-        minders = CoreDataHelper.retrieveMinders()
+        minders = CoreDataHelper.retrieve(.Minder)
+        ideas = CoreDataHelper.retrieve(.Idea)
         sortMinders()
         
         NotificationCenter.default.addObserver(self, selector: #selector(reloadTable), name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -43,7 +45,7 @@ class MinderController: UIViewController {
         if minder.regularity > 0 {
             cell.setHealthBar(to: 1.0, animated: true, color: minder.color)
         } else {
-            cell.setHealthBar(to: 1.0, animated: true, color: .ocean)
+            cell.setHealthBar(to: 1.0, animated: true, color: .systemTeal)
         }
         
         // play mashaAllah sound
@@ -59,7 +61,7 @@ class MinderController: UIViewController {
             cell.isUserInteractionEnabled = false
             
             // it's done so remove
-            CoreDataHelper.delete(minder: minder)
+            CoreDataHelper.delete(minder)
             minders.remove(at: indexPath.row)
             
             DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
@@ -92,7 +94,8 @@ class MinderController: UIViewController {
     }
     
     func sortMinders() {
-        minders.sort(by: { $0.title! < $1.title! })
+        minders.sort(by: { $0.title!.lowercased() < $1.title!.lowercased() })
+        minders.sort(by: { $0.doneDate ?? Date() < $1.doneDate ?? Date()})
         minders.sort(by: { $0.health < $1.health })
         minders.sort(by: { $0.sortingOrder < $1.sortingOrder })
     }
@@ -100,6 +103,58 @@ class MinderController: UIViewController {
     @objc func reloadTable() {
         sortMinders()
         tableView.reloadData()
+    }
+    
+    
+    func setupIdea(at indexPath: IndexPath? = nil) {
+        
+        let isNewIdea = (indexPath == nil)
+        
+        let idea: Idea
+        
+        let alertTitle: String
+        let alertMessage: String
+        
+        if isNewIdea {
+            
+            idea = CoreDataHelper.newObject(.Idea)
+            alertTitle = "What's your Idea?"
+            
+        } else {
+            idea = ideas[indexPath!.row]
+            alertTitle = "Edit the Idea"
+        }
+
+        let alert = UIAlertController(title: alertTitle, message: "", preferredStyle: .alert)
+    
+        
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Idea"
+            textField.text = idea.title
+            textField.autocapitalizationType = .sentences
+        })
+        
+        alert.addAction(UIAlertAction(title: "Bismillah", style: .default, handler: { [weak self] action in
+
+            if let title = alert.textFields?.first?.text {
+                
+                idea.title = title
+                CoreDataHelper.save()
+                
+                if isNewIdea {
+                    self?.ideas.insert(idea, at: 0)
+                    let indexPath = IndexPath(row: 0, section: 2)
+                    self?.tableView.insertRows(at: [indexPath], with: .automatic)
+                    self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                } else {
+                    self?.tableView.reloadRows(at: [indexPath!], with: .automatic)
+                }
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        self.present(alert, animated: true)
     }
     
     func setupTodo(at indexPath: IndexPath? = nil) {
@@ -113,7 +168,7 @@ class MinderController: UIViewController {
         
         if isNewTodo {
             
-            todo = CoreDataHelper.newMinder()
+            todo = CoreDataHelper.newObject(.Minder)
             alertTitle = "Create a To Do"
             alertMessage = "Choose a title and due date"
             
@@ -144,7 +199,6 @@ class MinderController: UIViewController {
                 
                 todo.title = title
                 todo.doneDate = newDate
-
                 CoreDataHelper.save()
                 
                 if isNewTodo {
@@ -165,7 +219,12 @@ class MinderController: UIViewController {
         self.present(alert, animated: true)
     }
     
-    func editMinder(at indexPath: IndexPath) {
+    func editItem(at indexPath: IndexPath) {
+        
+        if indexPath.section == 2 {
+            setupIdea(at: indexPath)
+            return
+        }
         
         let minder = minders[indexPath.row]
         if minder.regularity > 0 {
@@ -189,8 +248,7 @@ class MinderController: UIViewController {
         
         if isNewHabit {
             
-            habit = CoreDataHelper.newMinder()
-            
+            habit = CoreDataHelper.newObject(.Minder)
             alertTitle = "Create a Habit"
             alertMessage = "Choose a title and regularity in days"
             
@@ -212,7 +270,7 @@ class MinderController: UIViewController {
             textField.autocapitalizationType = .sentences
         })
         
-        let regularityInts: [Int16] = [0,1,2,3,7,14,28]
+        let regularityInts: [Int16] = [1,2,3,7,14,28]
         let regularityStrings: [String] = regularityInts.map {
             $0.regularity
         }
@@ -232,14 +290,11 @@ class MinderController: UIViewController {
                 habit.title = title
                 habit.regularity = regularity
                 habit.doneDate = doneDate
-
                 CoreDataHelper.save()
                 
                 if isNewHabit {
-                    self?.minders.reverse()
+                    let indexPath = IndexPath(row: self?.minders.count ?? 0, section: 1)
                     self?.minders.append(habit)
-                    self?.minders.reverse()
-                    let indexPath = IndexPath(row: 0, section: 1)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 } else {
@@ -254,6 +309,9 @@ class MinderController: UIViewController {
         
     }
     
+    @IBAction func ideaButtonPressed(_ sender: Any) {
+        setupIdea()
+    }
     
     @IBAction func todoButtonPressed(_ sender: Any) {
         setupTodo()
@@ -273,19 +331,24 @@ class MinderController: UIViewController {
 extension MinderController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 1 : minders.count
+        
+        if section == 0 {
+            return 1
+        }
+        
+        return section == 1 ? minders.count : ideas.count
     }
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
             let cell =  tableView.cellForRow(at: indexPath)!
             cell.tag = abs(cell.tag - 1)
-        } else {
+        } else if indexPath.section == 1 {
             strengthenMinder(at: indexPath)
         }
     }
@@ -299,12 +362,19 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
         
         cell.isUserInteractionEnabled = true
-        let minder = minders[indexPath.row]
         
+        if indexPath.section == 1 {
+            let minder = minders[indexPath.row]
+            cell.titleLabel.text = minder.title!
+            cell.regularityLabel.text = minder.when
+            cell.setHealthBar(to: minder.health, color: minder.color)
+        } else {
+            let idea = ideas[indexPath.row]
+            cell.titleLabel.text = idea.title ?? ""
+            cell.regularityLabel.text = "💡"
+            cell.setHealthBar(to: 0, color: .clear)
+        }
         
-        cell.titleLabel.text = minder.title!
-        cell.regularityLabel.text = minder.howOften
-        cell.setHealthBar(to: minder.health, color: minder.color)
         return cell
     }
     
@@ -314,14 +384,11 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        
+                
         if editingStyle == .delete {
-            let minderToDelete = minders[indexPath.row]
-            CoreDataHelper.delete(minder: minderToDelete)
-            self.minders.remove(at: indexPath.row)
+            let objectToDelete = indexPath.section == 1 ? self.minders.remove(at: indexPath.row) : self.ideas.remove(at: indexPath.row)
+            CoreDataHelper.delete(objectToDelete)
             tableView.deleteRows(at: [indexPath], with: .automatic)
-        } else if editingStyle == .insert {
-            
         }
     }
     
@@ -330,7 +397,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         let editTitle = NSLocalizedString("Edit", comment: "Edit action")
         let editAction = UIContextualAction(style: .normal,
         title: editTitle) { (action, view, completionHandler) in
-          self.editMinder(at: indexPath)
+          self.editItem(at: indexPath)
           completionHandler(true)
         }
         

@@ -9,6 +9,12 @@
 import UIKit
 import CoreData
 
+enum MinderType: String {
+    case Minder
+    case Idea
+    case Todo
+}
+
 struct CoreDataHelper {
     
     static let context: NSManagedObjectContext = {
@@ -23,10 +29,10 @@ struct CoreDataHelper {
     }()
     
     
-    static func newMinder() -> Minder {
-            let minder = NSEntityDescription.insertNewObject(forEntityName: "Minder", into: context) as! Minder
+    static func newObject<T: NSManagedObject>(_ type: MinderType) -> T {
+        let object = NSEntityDescription.insertNewObject(forEntityName: type.rawValue, into: context) as! T
 
-            return minder
+            return object
     }
     
     static func save() {
@@ -37,14 +43,14 @@ struct CoreDataHelper {
         }
     }
     
-    static func delete(minder: Minder) {
-        context.delete(minder)
+    static func delete<T: NSManagedObject>(_ object: T) {
+        context.delete(object)
         save()
     }
     
-    static func retrieveMinders() -> [Minder] {
+    static func retrieve<T: NSManagedObject>(_ type: MinderType) -> [T] {
         do {
-            let fetchRequest = NSFetchRequest<Minder>(entityName: "Minder")
+            let fetchRequest = NSFetchRequest<T>(entityName: type.rawValue)
             let results = try context.fetch(fetchRequest)
 
             return results
