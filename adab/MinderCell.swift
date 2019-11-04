@@ -13,14 +13,17 @@ class ReminderCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var reminderLabel: UILabel!
     
+    let consistentAr = "اكْلَفُوا مِنْ الْعَمَلِ مَا تُطِيقُونَ فَإِنَّ خَيْرَ الْعَمَلِ أَدْوَمُهُ وَإِنْ قَلَّ"
+    let consistentEn = "Take upon yourself that which you can bear, for the best of deeds are those done consistently, even if it is little."
+    
     override var tag: Int {
         didSet {
             if tag == 1 {
                 reminderLabel.textAlignment = .right
-                reminderLabel.text = Hadith.consistentAr.rawValue
+                reminderLabel.text = consistentAr
             } else {
                 reminderLabel.textAlignment = .left
-                reminderLabel.text = Hadith.consistentEn.rawValue
+                reminderLabel.text = consistentAr
             }
         }
     }
