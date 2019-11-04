@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import CoreData
 
 class MinderController: UIViewController {
     
@@ -16,8 +17,11 @@ class MinderController: UIViewController {
     private var player: AVAudioPlayer?
     fileprivate let minderCellId = "minderCellId"
     fileprivate let reminderCellId = "reminderCellId"
+    
+    fileprivate var todos = [Todo]()
     fileprivate var minders = [Minder]()
     fileprivate var ideas = [Idea]()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +30,7 @@ class MinderController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         self.navigationController?.navigationBar.shadowImage = UIImage()
         
+        todos = CoreDataHelper.retrieve(.Todo)
         minders = CoreDataHelper.retrieve(.Minder)
         ideas = CoreDataHelper.retrieve(.Idea)
         sortMinders()
@@ -34,20 +39,7 @@ class MinderController: UIViewController {
         
     }
     
-    func strengthenMinder(at indexPath: IndexPath){
-        
-        let minder = minders[indexPath.row]
-        minder.doneDate = Date()
-        CoreDataHelper.save()
-        
-        let cell = tableView.cellForRow(at: indexPath) as! MinderCell
-        
-        if minder.regularity > 0 {
-            cell.setHealthBar(to: 1.0, animated: true, color: minder.color)
-        } else {
-            cell.setHealthBar(to: 1.0, animated: true, color: .systemTeal)
-        }
-        
+    func praise() {
         // play mashaAllah sound
         let doneSounds = ["mashaAllah", "ahsant"]
         let newRandom = returnRandomNumber(doneSounds.count)
@@ -55,18 +47,38 @@ class MinderController: UIViewController {
         let generator = UIImpactFeedbackGenerator(style:  .medium)
         generator.impactOccurred()
         letterSound(doneSounds[newRandom])
+    }
+    
+    func accomplish(at indexPath: IndexPath){
         
-        if minder.regularity == 0 {
-            
-            cell.isUserInteractionEnabled = false
-            
-            // it's done so remove
+        let color: UIColor
+        
+        switch indexPath.section {
+        case 1:
+            let todo = todos[indexPath.row]
+            todo.dueDate = Date()
+            color = .systemTeal
+            CoreDataHelper.delete(todo)
+            todos.remove(at: indexPath.row)
+        case 2:
+            let minder = minders[indexPath.row]
+            minder.doneDate = Date()
+            color = minder.color
             CoreDataHelper.delete(minder)
             minders.remove(at: indexPath.row)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
-                self.tableView.deleteRows(at: [indexPath], with: .fade)
-            }
+        default:
+            return
+        }
+        
+        
+        let cell = tableView.cellForRow(at: indexPath) as! MinderCell
+        cell.setHealthBar(to: 1.0, animated: true, color: color)
+        cell.isUserInteractionEnabled = false
+
+        praise()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
+            self.tableView.deleteRows(at: [indexPath], with: .fade)
         }
         
     }
@@ -113,7 +125,6 @@ class MinderController: UIViewController {
         let idea: Idea
         
         let alertTitle: String
-        let alertMessage: String
         
         if isNewIdea {
             
@@ -143,7 +154,7 @@ class MinderController: UIViewController {
                 
                 if isNewIdea {
                     self?.ideas.insert(idea, at: 0)
-                    let indexPath = IndexPath(row: 0, section: 2)
+                    let indexPath = IndexPath(row: 0, section: 3)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 } else {
@@ -161,28 +172,28 @@ class MinderController: UIViewController {
         
         let isNewTodo = (indexPath == nil)
         
-        let todo: Minder
+        let todo: Todo
         
         let alertTitle: String
         let alertMessage: String
         
         if isNewTodo {
             
-            todo = CoreDataHelper.newObject(.Minder)
+            todo = CoreDataHelper.newObject(.Todo)
             alertTitle = "Create a To Do"
             alertMessage = "Choose a title and due date"
             
         } else {
-            todo = minders[indexPath!.row]
+            todo = todos[indexPath!.row]
             alertTitle = "Edit the To Do"
             alertMessage = "You can change the title and due date"
         }
 
         let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
         
-        var newDate = todo.doneDate
+        var newDate = todo.dueDate
         
-        alert.addDatePicker(date: todo.doneDate, minimumDate: min(Date(),todo.doneDate ?? Date()), maximumDate: nil) { date in
+        alert.addDatePicker(date: todo.dueDate, minimumDate: min(Date(),todo.dueDate ?? Date()), maximumDate: nil) { date in
             print(date)
             newDate = date
         }
@@ -198,13 +209,11 @@ class MinderController: UIViewController {
             if let title = alert.textFields?.first?.text {
                 
                 todo.title = title
-                todo.doneDate = newDate
+                todo.dueDate = newDate
                 CoreDataHelper.save()
                 
                 if isNewTodo {
-                    self?.minders.reverse()
-                    self?.minders.append(todo)
-                    self?.minders.reverse()
+                    self?.todos.insert(todo, at: 0)
                     let indexPath = IndexPath(row: 0, section: 1)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
@@ -220,19 +229,16 @@ class MinderController: UIViewController {
     }
     
     func editItem(at indexPath: IndexPath) {
-        
-        if indexPath.section == 2 {
-            setupIdea(at: indexPath)
-            return
-        }
-        
-        let minder = minders[indexPath.row]
-        if minder.regularity > 0 {
-            setupHabit(at: indexPath)
-        } else {
+        switch indexPath.section {
+        case 1:
             setupTodo(at: indexPath)
+        case 2:
+            setupHabit(at: indexPath)
+        case 3:
+            setupIdea(at: indexPath)
+        default:
+            break
         }
-        
     }
     
     func setupHabit(at indexPath: IndexPath? = nil) {
@@ -240,7 +246,7 @@ class MinderController: UIViewController {
         let isNewHabit = (indexPath == nil)
         
         let habit: Minder
-        var regularity: Int16 = 0
+        var regularity: Int16 = 1
         var doneDate: Date?
         
         let alertTitle: String
@@ -275,7 +281,7 @@ class MinderController: UIViewController {
             $0.regularity
         }
             
-        let regularitySelectedValue: PickerViewViewController.Index = (column: 0, row: regularityInts.firstIndex(of: regularity) ?? 0)
+        let regularitySelectedValue: PickerViewViewController.Index = (column: 0, row: regularityInts.firstIndex(of: regularity) ?? 1)
         
         alert.addPickerView(values: [regularityStrings], initialSelections: [regularitySelectedValue]) { vc, picker, index, values in
             
@@ -293,7 +299,7 @@ class MinderController: UIViewController {
                 CoreDataHelper.save()
                 
                 if isNewHabit {
-                    let indexPath = IndexPath(row: self?.minders.count ?? 0, section: 1)
+                    let indexPath = IndexPath(row: self?.minders.count ?? 0, section: 2)
                     self?.minders.append(habit)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
@@ -331,51 +337,75 @@ class MinderController: UIViewController {
 extension MinderController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if section == 0 {
+        switch section {
+        case 0:
             return 1
+        case 1:
+            return todos.count
+        case 2:
+            return minders.count
+        case 3:
+            return ideas.count
+        default:
+            return 0
         }
-        
-        return section == 1 ? minders.count : ideas.count
     }
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
+        
+        switch indexPath.section {
+        case 0:
             let cell =  tableView.cellForRow(at: indexPath)!
             cell.tag = abs(cell.tag - 1)
-        } else if indexPath.section == 1 {
-            strengthenMinder(at: indexPath)
+        case 1:
+            accomplish(at: indexPath)
+        case 2:
+            accomplish(at: indexPath)
+        case 3:
+            break
+        default:
+            break
         }
+    
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if indexPath.section == 0 {
+        switch indexPath.section {
+        case 0:
             return tableView.dequeueReusableCell(withIdentifier: reminderCellId, for: indexPath) as! ReminderCell
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
-        
-        cell.isUserInteractionEnabled = true
-        
-        if indexPath.section == 1 {
+        case 1:
+            let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
+            let todo = todos[indexPath.row]
+            cell.titleLabel.text = todo.title ?? ""
+            cell.regularityLabel.text = todo.when
+            cell.setHealthBar(to: 0, color: .systemTeal)
+            cell.isUserInteractionEnabled = true
+            return cell
+        case 2:
+            let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
             let minder = minders[indexPath.row]
             cell.titleLabel.text = minder.title!
             cell.regularityLabel.text = minder.when
             cell.setHealthBar(to: minder.health, color: minder.color)
-        } else {
+            cell.isUserInteractionEnabled = true
+            return cell
+        case 3:
+            let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
             let idea = ideas[indexPath.row]
             cell.titleLabel.text = idea.title ?? ""
             cell.regularityLabel.text = "💡"
             cell.setHealthBar(to: 0, color: .clear)
+            return cell
+        default:
+            return UITableViewCell()
         }
         
-        return cell
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -386,7 +416,19 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
                 
         if editingStyle == .delete {
-            let objectToDelete = indexPath.section == 1 ? self.minders.remove(at: indexPath.row) : self.ideas.remove(at: indexPath.row)
+            
+            let objectToDelete: NSManagedObject
+            
+            switch indexPath.section {
+            case 1:
+                objectToDelete = self.todos.remove(at: indexPath.row)
+            case 2:
+                objectToDelete = self.minders.remove(at: indexPath.row)
+            case 3:
+                objectToDelete = self.ideas.remove(at: indexPath.row)
+            default:
+                objectToDelete = NSManagedObject()
+            }
             CoreDataHelper.delete(objectToDelete)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }

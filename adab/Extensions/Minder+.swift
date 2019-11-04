@@ -10,10 +10,6 @@ import UIKit
 
 extension Minder {
     
-    var isOneTime: Bool {
-        return regularity == 0
-    }
-    
     var when: String {
         switch regularity {
         case 1:
@@ -29,25 +25,17 @@ extension Minder {
         case 28:
             return "Monthly"
         default:
-            let dateFormatterPrint = DateFormatter()
-            dateFormatterPrint.dateFormat = "MMM dd"
-            return doneDate == nil ? "" : dateFormatterPrint.string(from: doneDate!)
+            return ""
         }
     }
     
     var sortingOrder: Int {
-        if isOneTime {
-            return 0
-        } else if doneDate == nil {
-            return 2
-        } else {
-            return 1
-        }
+        return doneDate == nil ? 2 : 1
     }
     
     var health: Float {
         
-        guard let doneDate = self.doneDate, regularity > 0 else { return 0 }
+        guard let doneDate = self.doneDate else { return 0 }
         
         let calendar = NSCalendar.current
         let components = calendar.dateComponents([.hour], from: doneDate, to: Date())
@@ -64,10 +52,6 @@ extension Minder {
     }
     
     var color: UIColor {
-        
-        if regularity == 0 {
-            return .systemTeal
-        }
         
         switch health {
         case 0.45..<0.8:
