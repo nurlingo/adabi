@@ -67,6 +67,7 @@ class MinderController: UIViewController {
             let minder = minders[indexPath.row]
             minder.doneDate = Date()
             color = minder.color
+            CoreDataHelper.save()
         default:
             return
         }
