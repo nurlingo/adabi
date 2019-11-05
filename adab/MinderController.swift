@@ -60,12 +60,13 @@ class MinderController: UIViewController {
             color = .systemTeal
             CoreDataHelper.delete(todo)
             todos.remove(at: indexPath.row)
+            DispatchQueue.main.asyncAfter(deadline: .now()+1.7) {
+                self.tableView.deleteRows(at: [indexPath], with: .fade)
+            }
         case 2:
             let minder = minders[indexPath.row]
             minder.doneDate = Date()
             color = minder.color
-            CoreDataHelper.delete(minder)
-            minders.remove(at: indexPath.row)
         default:
             return
         }
@@ -76,11 +77,6 @@ class MinderController: UIViewController {
         cell.isUserInteractionEnabled = false
 
         praise()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now()+1.5) {
-            self.tableView.deleteRows(at: [indexPath], with: .fade)
-        }
-        
     }
     
     func returnRandomNumber(_ range: Int) -> Int {
