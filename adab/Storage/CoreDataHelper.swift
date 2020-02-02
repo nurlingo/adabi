@@ -11,6 +11,7 @@ import CoreData
 
 enum MinderType: String {
     case Minder
+    case Person
     case Idea
     case Todo
 }

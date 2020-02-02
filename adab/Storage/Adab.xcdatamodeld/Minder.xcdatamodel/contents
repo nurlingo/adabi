@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15400" systemVersion="18G103" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15508" systemVersion="19B88" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Idea" representedClassName="Idea" syncable="YES" codeGenerationType="class">
         <attribute name="title" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Minder" representedClassName=".Minder" syncable="YES" codeGenerationType="class">
+        <attribute name="doneDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="regularity" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="title" attributeType="String"/>
+    </entity>
+    <entity name="Person" representedClassName=".Person" syncable="YES" codeGenerationType="class">
         <attribute name="doneDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="regularity" optional="YES" attributeType="Integer 16" defaultValueString="1" usesScalarValueType="YES"/>
         <attribute name="title" attributeType="String"/>
@@ -16,5 +21,6 @@
         <element name="Idea" positionX="-63" positionY="9" width="128" height="58"/>
         <element name="Minder" positionX="-63" positionY="-18" width="128" height="88"/>
         <element name="Todo" positionX="-54" positionY="18" width="128" height="73"/>
+        <element name="Person" positionX="-54" positionY="18" width="128" height="88"/>
     </elements>
 </model>

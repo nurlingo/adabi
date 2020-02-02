@@ -20,6 +20,7 @@ class MinderController: UIViewController {
     
     fileprivate var todos = [Todo]()
     fileprivate var minders = [Minder]()
+    fileprivate var people = [Person]()
     fileprivate var ideas = [Idea]()
     
     
@@ -32,6 +33,7 @@ class MinderController: UIViewController {
         
         todos = CoreDataHelper.retrieve(.Todo)
         minders = CoreDataHelper.retrieve(.Minder)
+        people = CoreDataHelper.retrieve(.Person)
         ideas = CoreDataHelper.retrieve(.Idea)
         sortMinders()
         
@@ -68,6 +70,11 @@ class MinderController: UIViewController {
             minder.doneDate = Date()
             color = minder.color
             CoreDataHelper.save()
+        case 3:
+            let person = people[indexPath.row]
+            person.doneDate = Date()
+            color = person.color
+            CoreDataHelper.save()
         default:
             return
         }
@@ -99,7 +106,6 @@ class MinderController: UIViewController {
         } catch let error as NSError {
             print(error.description)
         }
-        
     }
     
     func sortMinders() {
@@ -107,6 +113,12 @@ class MinderController: UIViewController {
         minders.sort(by: { $0.doneDate ?? Date() < $1.doneDate ?? Date()})
         minders.sort(by: { $0.health < $1.health })
         minders.sort(by: { $0.sortingOrder < $1.sortingOrder })
+        
+        people.sort(by: { $0.title!.lowercased() < $1.title!.lowercased() })
+        people.sort(by: { $0.doneDate ?? Date() < $1.doneDate ?? Date()})
+        people.sort(by: { $0.health < $1.health })
+        people.sort(by: { $0.regularity < $1.regularity })
+        people.sort(by: { $0.sortingOrder < $1.sortingOrder })
     }
     
     @objc func reloadTable() {
@@ -232,10 +244,86 @@ class MinderController: UIViewController {
         case 2:
             setupHabit(at: indexPath)
         case 3:
+            setupPerson(at: indexPath)
+        case 4:
             setupIdea(at: indexPath)
         default:
             break
         }
+    }
+    
+    func setupPerson(at indexPath: IndexPath? = nil) {
+        
+        let isNewPerson = (indexPath == nil)
+        
+        let person: Person
+        var regularity: Int16 = 1
+        var doneDate: Date?
+        
+        let alertTitle: String
+        let alertMessage: String
+        
+        if isNewPerson {
+            
+            person = CoreDataHelper.newObject(.Person)
+            alertTitle = "Add a Person"
+            alertMessage = "Enter name and how often you want to contact"
+            
+        } else {
+            person = people[indexPath!.row]
+            regularity = person.regularity
+            doneDate = person.doneDate
+            
+            alertTitle = "Edit the Person"
+            alertMessage = "You can change the name and regularity of contact"
+        }
+        
+        
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
+        
+        alert.addTextField(configurationHandler: { textField in
+            textField.placeholder = "Name"
+            textField.text = person.title
+            textField.autocapitalizationType = .sentences
+        })
+        
+        let regularityInts: [Int16] = [1,2,3,7,14,28]
+        let regularityStrings: [String] = regularityInts.map {
+            $0.regularity
+        }
+            
+        let regularitySelectedValue: PickerViewViewController.Index = (column: 0, row: regularityInts.firstIndex(of: regularity) ?? 1)
+        
+        alert.addPickerView(values: [regularityStrings], initialSelections: [regularitySelectedValue]) { vc, picker, index, values in
+            
+            regularity = regularityInts[index.row]
+            
+        }
+        
+        alert.addAction(UIAlertAction(title: "Bismillah", style: .default, handler: { [weak self] action in
+
+            if let title = alert.textFields?.first?.text {
+                
+                person.title = title
+                person.regularity = regularity
+                person.doneDate = doneDate
+                CoreDataHelper.save()
+                
+                if isNewPerson {
+                    let indexPath = IndexPath(row: self?.people.count ?? 0, section: 3)
+                    self?.people.append(person)
+                    self?.tableView.insertRows(at: [indexPath], with: .automatic)
+                    self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                } else {
+                    self?.tableView.reloadRows(at: [indexPath!], with: .automatic)
+                }
+            }
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+
+        self.present(alert, animated: true)
+        
     }
     
     func setupHabit(at indexPath: IndexPath? = nil) {
@@ -320,6 +408,10 @@ class MinderController: UIViewController {
         setupTodo()
     }
     
+    @IBAction func personButtonPressed(_ sender: Any) {
+        setupPerson()
+    }
+    
     @IBAction func minderButtonPressed(_ sender: Any) {
         setupHabit()
     }
@@ -342,6 +434,8 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         case 2:
             return minders.count
         case 3:
+            return people.count
+        case 4:
             return ideas.count
         default:
             return 0
@@ -350,7 +444,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 5
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -359,12 +453,8 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         case 0:
             let cell =  tableView.cellForRow(at: indexPath)!
             cell.tag = abs(cell.tag - 1)
-        case 1:
+        case 1,2,3:
             accomplish(at: indexPath)
-        case 2:
-            accomplish(at: indexPath)
-        case 3:
-            break
         default:
             break
         }
@@ -394,6 +484,14 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             return cell
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
+            let person = people[indexPath.row]
+            cell.titleLabel.text = person.title!
+            cell.regularityLabel.text = person.when
+            cell.setHealthBar(to: person.health, color: person.color)
+            cell.isUserInteractionEnabled = true
+            return cell
+        case 4:
+            let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
             let idea = ideas[indexPath.row]
             cell.titleLabel.text = idea.title ?? ""
             cell.regularityLabel.text = "💡"
@@ -422,6 +520,8 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             case 2:
                 objectToDelete = self.minders.remove(at: indexPath.row)
             case 3:
+                objectToDelete = self.people.remove(at: indexPath.row)
+            case 4:
                 objectToDelete = self.ideas.remove(at: indexPath.row)
             default:
                 objectToDelete = NSManagedObject()
