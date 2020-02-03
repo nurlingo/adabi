@@ -52,7 +52,15 @@ extension Person {
     }
     
     var color: UIColor {
-        UIColor.kinOrange
+        switch health {
+        case 0.3..<0.7:
+            let yellow = UIColor.rgb(233,159,64)
+            return yellow
+        case 0.05..<0.3:
+            return .systemRed
+        default:
+            return UIColor.kinOrange
+        }
     }
     
 }

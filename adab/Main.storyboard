@@ -43,18 +43,15 @@
                                                                 <constraint firstAttribute="height" constant="7" id="Y2S-Rr-VIb"/>
                                                             </constraints>
                                                         </view>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="As-Salamu 3alaikum!" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vGE-6c-T2j">
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="As-salamu 3alaikum!" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vGE-6c-T2j">
                                                             <rect key="frame" x="0.0" y="6.9999999999999982" width="384" height="31.333333333333329"/>
                                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="26"/>
                                                             <color key="textColor" red="0.99607843139999996" green="0.99607843139999996" blue="0.88235294119999996" alpha="1" colorSpace="calibratedRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Take upon yourself that which you can bear, for the best of deeds are those done consistently, even if it is little." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I6O-Ni-AO7">
-                                                            <rect key="frame" x="0.0" y="38.333333333333329" width="384" height="5"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="height" constant="5" id="A30-Po-Afh"/>
-                                                            </constraints>
-                                                            <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="16"/>
+                                                            <rect key="frame" x="0.0" y="38.333333333333329" width="384" height="0.0"/>
+                                                            <fontDescription key="fontDescription" name="AvenirNextCondensed-Regular" family="Avenir Next Condensed" pointSize="15"/>
                                                             <color key="textColor" red="0.99607843139999996" green="0.99607843139999996" blue="0.88235294119999996" alpha="1" colorSpace="calibratedRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>

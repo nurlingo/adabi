@@ -54,6 +54,19 @@ class MinderController: UIViewController {
         self.refreshControl.endRefreshing()
         self.retrieveData()
         self.tableView.reloadData()
+//        setNewPhrase()
+    }
+    
+    func setNewPhrase() {
+        let phrasesEn = [
+        "Take upon yourself that which you can bear, for the best of deeds are those done consistently, even if it is little.",
+        "Whosever desires to have expansion in his sustenance and a prolonged life, should treat his relatives with kindness. (Bukhari & Muslim)"
+        ]
+        
+        if let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ReminderCell {
+            let newRandom = returnRandomNumber(phrasesEn.count)
+            cell.reminderLabel.text = phrasesEn[newRandom]
+        }
     }
     
     func praise() {
@@ -479,9 +492,6 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         switch indexPath.section {
-        case 0:
-            let cell =  tableView.cellForRow(at: indexPath)!
-            cell.tag = abs(cell.tag - 1)
         case 1,2,3,4:
             self.editItem(at: indexPath)
         default:
@@ -501,13 +511,17 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         
         switch section {
         case 1:
-            label.text = "Todos: get it done"
+            label.textColor = .systemTeal
+            label.text = todos.isEmpty ? "" : "Todos: get it done"
         case 2:
-            label.text = "Habits: be consistent"
+            label.textColor = .habitGreen
+            label.text = minders.isEmpty ? "" : "Habits: be consistent"
         case 3:
-            label.text = "Kinship: keep in touch"
+            label.textColor = .kinOrange
+            label.text = people.isEmpty ? "" : "Kinship: keep in touch with family"
         case 4:
-            label.text = "Ideas: thoughts worth-remembering"
+            label.textColor = .menuLight
+            label.text = ideas.isEmpty ? "" : "Ideas: thoughts worth-remembering"
         default:
             label.text = ""
         }
