@@ -13,32 +13,47 @@ import CoreData
 class MinderController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
+    private let refreshControl = UIRefreshControl()
     
     private var player: AVAudioPlayer?
     fileprivate let minderCellId = "minderCellId"
     fileprivate let reminderCellId = "reminderCellId"
+    fileprivate let ideaCellId = "ideaCellId"
     
     fileprivate var todos = [Todo]()
     fileprivate var minders = [Minder]()
     fileprivate var people = [Person]()
     fileprivate var ideas = [Idea]()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.estimatedRowHeight = 63
         tableView.rowHeight = UITableView.automaticDimension
-        self.navigationController?.navigationBar.shadowImage = UIImage()
         
+        tableView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(refresh(_:)), for: .valueChanged)
+        refreshControl.tintColor = UIColor.menuLight
+        
+        retrieveData()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadTable), name: UIApplication.willEnterForegroundNotification, object: nil)
+        
+    }
+    
+    func retrieveData() {
         todos = CoreDataHelper.retrieve(.Todo)
         minders = CoreDataHelper.retrieve(.Minder)
         people = CoreDataHelper.retrieve(.Person)
         ideas = CoreDataHelper.retrieve(.Idea)
         sortMinders()
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadTable), name: UIApplication.willEnterForegroundNotification, object: nil)
-        
+    }
+    
+    @objc private func refresh(_ sender: Any) {
+        // Fetch Weather Data
+        self.refreshControl.endRefreshing()
+        self.retrieveData()
+        self.tableView.reloadData()
     }
     
     func praise() {
@@ -62,7 +77,7 @@ class MinderController: UIViewController {
             color = .systemTeal
             CoreDataHelper.delete(todo)
             todos.remove(at: indexPath.row)
-            DispatchQueue.main.asyncAfter(deadline: .now()+1.7) {
+            DispatchQueue.main.asyncAfter(deadline: .now()+2.5) {
                 self.tableView.deleteRows(at: [indexPath], with: .fade)
             }
         case 2:
@@ -109,6 +124,9 @@ class MinderController: UIViewController {
     }
     
     func sortMinders() {
+        todos.sort(by: { $0.title!.lowercased() < $1.title!.lowercased() })
+        todos.sort(by: { $0.dueDate ?? Date() < $1.dueDate ?? Date()})
+        
         minders.sort(by: { $0.title!.lowercased() < $1.title!.lowercased() })
         minders.sort(by: { $0.doneDate ?? Date() < $1.doneDate ?? Date()})
         minders.sort(by: { $0.health < $1.health })
@@ -163,7 +181,7 @@ class MinderController: UIViewController {
                 
                 if isNewIdea {
                     self?.ideas.insert(idea, at: 0)
-                    let indexPath = IndexPath(row: 0, section: 3)
+                    let indexPath = IndexPath(row: 0, section: 4)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 } else {
@@ -266,7 +284,7 @@ class MinderController: UIViewController {
         if isNewPerson {
             
             person = CoreDataHelper.newObject(.Person)
-            alertTitle = "Add a Person"
+            alertTitle = "Add a Person to keep in touch with"
             alertMessage = "Enter name and how often you want to contact"
             
         } else {
@@ -274,8 +292,8 @@ class MinderController: UIViewController {
             regularity = person.regularity
             doneDate = person.doneDate
             
-            alertTitle = "Edit the Person"
-            alertMessage = "You can change the name and regularity of contact"
+            alertTitle = "Edit \(person.title ?? "the Person")"
+            alertMessage = "You can change the name and regularity"
         }
         
         
@@ -416,6 +434,17 @@ class MinderController: UIViewController {
         setupHabit()
     }
     
+    @IBAction func completeButtonPressed(_ sender: Any) {
+        
+        if let button = sender as? UIButton,
+            let container = button.superview,
+            let cell = container.superview as? MinderCell,
+            let indexPath = tableView.indexPath(for: cell) {            
+            accomplish(at: indexPath)
+        }
+        
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -453,12 +482,42 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         case 0:
             let cell =  tableView.cellForRow(at: indexPath)!
             cell.tag = abs(cell.tag - 1)
-        case 1,2,3:
-            accomplish(at: indexPath)
+        case 1,2,3,4:
+            self.editItem(at: indexPath)
         default:
             break
         }
     
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        let view = UIView(frame: CGRect(x: 0, y: 6, width: UIScreen.main.bounds.width, height: 30))
+        view.backgroundColor = tableView.backgroundColor?.withAlphaComponent(0.8)
+        
+        let label = UILabel(frame: CGRect(x: 9, y: 12, width: UIScreen.main.bounds.width, height: 24))
+        label.textColor = UIColor.menuLight
+        label.font = UIFont.systemFont(ofSize: 20)
+        
+        switch section {
+        case 1:
+            label.text = "Todos: get it done"
+        case 2:
+            label.text = "Habits: be consistent"
+        case 3:
+            label.text = "Kinship: keep in touch"
+        case 4:
+            label.text = "Ideas: thoughts worth-remembering"
+        default:
+            label.text = ""
+        }
+        
+        view.addSubview(label)
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return section == 0 ? 0 : 40
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -471,6 +530,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             let todo = todos[indexPath.row]
             cell.titleLabel.text = todo.title ?? ""
             cell.regularityLabel.text = todo.when
+            cell.regularityLabelWidth.constant = todo.when == "" ? 0 : 62
             cell.setHealthBar(to: 0, color: .systemTeal)
             cell.isUserInteractionEnabled = true
             return cell
@@ -479,6 +539,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             let minder = minders[indexPath.row]
             cell.titleLabel.text = minder.title!
             cell.regularityLabel.text = minder.when
+            cell.regularityLabelWidth.constant = minder.when == "" ? 0 : 62
             cell.setHealthBar(to: minder.health, color: minder.color)
             cell.isUserInteractionEnabled = true
             return cell
@@ -487,15 +548,14 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             let person = people[indexPath.row]
             cell.titleLabel.text = person.title!
             cell.regularityLabel.text = person.when
+            cell.regularityLabelWidth.constant = person.when == "" ? 0 : 62
             cell.setHealthBar(to: person.health, color: person.color)
             cell.isUserInteractionEnabled = true
             return cell
         case 4:
-            let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: ideaCellId, for: indexPath) as! IdeaCell
             let idea = ideas[indexPath.row]
-            cell.titleLabel.text = idea.title ?? ""
-            cell.regularityLabel.text = "💡"
-            cell.setHealthBar(to: 0, color: .clear)
+            cell.ideaLabel.text = idea.title ?? ""
             return cell
         default:
             return UITableViewCell()

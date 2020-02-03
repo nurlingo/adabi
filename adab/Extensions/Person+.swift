@@ -52,7 +52,7 @@ extension Person {
     }
     
     var color: UIColor {
-        UIColor.systemPink
+        UIColor.kinOrange
     }
     
 }

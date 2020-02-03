@@ -16,6 +16,8 @@ extension UIColor {
     static let menuLight = UIColor(red: 254/255, green: 254/255, blue: 225/255, alpha: 1.0)
     static let menuDark = UIColor(red: 58/255, green: 49/255, blue: 49/255, alpha: 1.0)
     static let ocean = UIColor.rgb(65,158,165)
+    static let habitGreen = UIColor.rgb(70, 187, 115)
+    static let kinOrange = UIColor.rgb(245,113,65)
     
     static var random: UIColor {
         
