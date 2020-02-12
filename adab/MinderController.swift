@@ -137,18 +137,16 @@ class MinderController: UIViewController {
     }
     
     func sortMinders() {
-        todos.sort(by: { $0.title!.lowercased() < $1.title!.lowercased() })
         todos.sort(by: { $0.dueDate ?? Date() < $1.dueDate ?? Date()})
         
-        minders.sort(by: { $0.title!.lowercased() < $1.title!.lowercased() })
         minders.sort(by: { $0.doneDate ?? Date() < $1.doneDate ?? Date()})
+        people.sort(by: { $0.regularity < $1.regularity })
         minders.sort(by: { $0.health < $1.health })
         minders.sort(by: { $0.sortingOrder < $1.sortingOrder })
         
-        people.sort(by: { $0.title!.lowercased() < $1.title!.lowercased() })
         people.sort(by: { $0.doneDate ?? Date() < $1.doneDate ?? Date()})
-        people.sort(by: { $0.health < $1.health })
         people.sort(by: { $0.regularity < $1.regularity })
+        people.sort(by: { $0.health < $1.health })
         people.sort(by: { $0.sortingOrder < $1.sortingOrder })
     }
     
@@ -193,8 +191,8 @@ class MinderController: UIViewController {
                 CoreDataHelper.save()
                 
                 if isNewIdea {
-                    self?.ideas.insert(idea, at: 0)
-                    let indexPath = IndexPath(row: 0, section: 4)
+                    let indexPath = IndexPath(row: self!.ideas.count, section: 4)
+                    self?.ideas.append(idea)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 } else {
@@ -281,6 +279,23 @@ class MinderController: UIViewController {
         default:
             break
         }
+    }
+    
+    func archiveItem(at indexPath: IndexPath) {
+        switch indexPath.section {
+        case 2:
+            let habit = minders[indexPath.row]
+            habit.doneDate = nil
+            CoreDataHelper.save()
+        case 3:
+            let person = people[indexPath.row]
+            person.doneDate = nil
+            CoreDataHelper.save()
+        default:
+            break
+        }
+        
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func setupPerson(at indexPath: IndexPath? = nil) {
@@ -578,7 +593,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return indexPath.section > 0
+        return  [1,2,3].contains(indexPath.section)
     }
     
     
@@ -606,11 +621,10 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
-        let editTitle = NSLocalizedString("Edit", comment: "Edit action")
+        let editTitle = NSLocalizedString("Archive", comment: "Archive habit")
         let editAction = UIContextualAction(style: .normal,
         title: editTitle) { (action, view, completionHandler) in
-          self.editItem(at: indexPath)
+          self.archiveItem(at: indexPath)
           completionHandler(true)
         }
         
