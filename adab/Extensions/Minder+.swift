@@ -54,10 +54,10 @@ extension Minder {
     var color: UIColor {
         
         switch health {
-        case 0.3..<0.7:
+        case 0.1..<0.5:
             let yellow = UIColor.rgb(233,159,64)
             return yellow
-        case 0.05..<0.3:
+        case 0.05..<0.1:
             return .systemRed
         default:
             return UIColor.habitGreen

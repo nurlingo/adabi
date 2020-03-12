@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="k8q-TR-lbC">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="k8q-TR-lbC">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15510"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -212,18 +212,18 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" translatesAutoresizingMaskIntoConstraints="NO" id="b4d-Of-kdL">
                                 <rect key="frame" x="0.0" y="812" width="414" height="50"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="303-JD-TdU">
-                                        <rect key="frame" x="0.0" y="0.0" width="113.33333333333333" height="50"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yaK-55-wAv">
+                                        <rect key="frame" x="0.0" y="0.0" width="75" height="50"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="37"/>
-                                        <state key="normal" title="toDo">
-                                            <color key="titleColor" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" title="Kin">
+                                            <color key="titleColor" red="0.95294117647058818" green="0.44313725490196076" blue="0.25490196078431371" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <connections>
-                                            <action selector="todoButtonPressed:" destination="k8q-TR-lbC" eventType="touchUpInside" id="6eQ-Wa-OjN"/>
+                                            <action selector="personButtonPressed:" destination="k8q-TR-lbC" eventType="touchUpInside" id="g42-wA-RhQ"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L1E-Q4-Zi1">
-                                        <rect key="frame" x="113.33333333333331" y="0.0" width="126.66666666666669" height="50"/>
+                                        <rect key="frame" x="75" y="0.0" width="127" height="50"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="37"/>
                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Habit">
@@ -233,14 +233,14 @@
                                             <action selector="minderButtonPressed:" destination="k8q-TR-lbC" eventType="touchUpInside" id="1Hy-gv-oOR"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yaK-55-wAv">
-                                        <rect key="frame" x="240.00000000000003" y="0.0" width="75.333333333333343" height="50"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="303-JD-TdU">
+                                        <rect key="frame" x="202.00000000000003" y="0.0" width="113.33333333333334" height="50"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="37"/>
-                                        <state key="normal" title="Kin">
-                                            <color key="titleColor" red="0.95294117647058818" green="0.44313725490196076" blue="0.25490196078431371" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" title="toDo">
+                                            <color key="titleColor" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <connections>
-                                            <action selector="personButtonPressed:" destination="k8q-TR-lbC" eventType="touchUpInside" id="g42-wA-RhQ"/>
+                                            <action selector="todoButtonPressed:" destination="k8q-TR-lbC" eventType="touchUpInside" id="6eQ-Wa-OjN"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T8F-zE-ae8">

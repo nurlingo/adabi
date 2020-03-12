@@ -53,13 +53,13 @@ extension Person {
     
     var color: UIColor {
         switch health {
-        case 0.3..<0.7:
+        case 0.1..<0.5:
             let yellow = UIColor.rgb(233,159,64)
             return yellow
-        case 0.05..<0.3:
-            return .systemRed
+        case 0.05..<0.1:
+            return .gray
         default:
-            return UIColor.kinOrange
+            return UIColor.habitGreen
         }
     }
     

@@ -84,7 +84,7 @@ class MinderController: UIViewController {
         let color: UIColor
         
         switch indexPath.section {
-        case 1:
+        case 3:
             let todo = todos[indexPath.row]
             todo.dueDate = Date()
             color = .systemTeal
@@ -98,7 +98,7 @@ class MinderController: UIViewController {
             minder.doneDate = Date()
             color = minder.color
             CoreDataHelper.save()
-        case 3:
+        case 1:
             let person = people[indexPath.row]
             person.doneDate = Date()
             color = person.color
@@ -252,7 +252,7 @@ class MinderController: UIViewController {
                 
                 if isNewTodo {
                     self?.todos.insert(todo, at: 0)
-                    let indexPath = IndexPath(row: 0, section: 1)
+                    let indexPath = IndexPath(row: 0, section: 3)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 } else {
@@ -268,11 +268,11 @@ class MinderController: UIViewController {
     
     func editItem(at indexPath: IndexPath) {
         switch indexPath.section {
-        case 1:
+        case 3:
             setupTodo(at: indexPath)
         case 2:
             setupHabit(at: indexPath)
-        case 3:
+        case 1:
             setupPerson(at: indexPath)
         case 4:
             setupIdea(at: indexPath)
@@ -287,7 +287,7 @@ class MinderController: UIViewController {
             let habit = minders[indexPath.row]
             habit.doneDate = nil
             CoreDataHelper.save()
-        case 3:
+        case 1:
             let person = people[indexPath.row]
             person.doneDate = nil
             CoreDataHelper.save()
@@ -356,7 +356,7 @@ class MinderController: UIViewController {
                 CoreDataHelper.save()
                 
                 if isNewPerson {
-                    let indexPath = IndexPath(row: self?.people.count ?? 0, section: 3)
+                    let indexPath = IndexPath(row: self?.people.count ?? 0, section: 1)
                     self?.people.append(person)
                     self?.tableView.insertRows(at: [indexPath], with: .automatic)
                     self?.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
@@ -486,11 +486,11 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         switch section {
         case 0:
             return 1
-        case 1:
+        case 3:
             return todos.count
         case 2:
             return minders.count
-        case 3:
+        case 1:
             return people.count
         case 4:
             return ideas.count
@@ -525,15 +525,15 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         label.font = UIFont.systemFont(ofSize: 20)
         
         switch section {
-        case 1:
+        case 3:
             label.textColor = .systemTeal
             label.text = todos.isEmpty ? "" : "Todos: get it done"
         case 2:
             label.textColor = .habitGreen
             label.text = minders.isEmpty ? "" : "Habits: be consistent"
-        case 3:
+        case 1:
             label.textColor = .kinOrange
-            label.text = people.isEmpty ? "" : "Kinship: keep in touch with family"
+            label.text = people.isEmpty ? "" : "Relations: keep them warm"
         case 4:
             label.textColor = .menuLight
             label.text = ideas.isEmpty ? "" : "Ideas: thoughts worth-remembering"
@@ -554,7 +554,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
         switch indexPath.section {
         case 0:
             return tableView.dequeueReusableCell(withIdentifier: reminderCellId, for: indexPath) as! ReminderCell
-        case 1:
+        case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
             let todo = todos[indexPath.row]
             cell.titleLabel.text = todo.title ?? ""
@@ -572,7 +572,7 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             cell.setHealthBar(to: minder.health, color: minder.color)
             cell.isUserInteractionEnabled = true
             return cell
-        case 3:
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: minderCellId, for: indexPath) as! MinderCell
             let person = people[indexPath.row]
             cell.titleLabel.text = person.title!
@@ -604,11 +604,11 @@ extension MinderController: UITableViewDataSource, UITableViewDelegate {
             let objectToDelete: NSManagedObject
             
             switch indexPath.section {
-            case 1:
+            case 3:
                 objectToDelete = self.todos.remove(at: indexPath.row)
             case 2:
                 objectToDelete = self.minders.remove(at: indexPath.row)
-            case 3:
+            case 1:
                 objectToDelete = self.people.remove(at: indexPath.row)
             case 4:
                 objectToDelete = self.ideas.remove(at: indexPath.row)

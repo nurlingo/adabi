@@ -14,6 +14,7 @@ enum MinderType: String {
     case Person
     case Idea
     case Todo
+    case Book
 }
 
 struct CoreDataHelper {

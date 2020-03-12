@@ -19,6 +19,7 @@
 		B75EC1E72348415B00F76103 /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B75EC1E62348415B00F76103 /* CoreDataHelper.swift */; };
 		B7704A252354391C00C91547 /* Minder+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7704A242354391C00C91547 /* Minder+.swift */; };
 		B7704A272354490800C91547 /* Int16+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7704A262354490800C91547 /* Int16+.swift */; };
+		B7A645BD241010EA0052F8B8 /* BookManagedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7A645BC241010EA0052F8B8 /* BookManagedObject.swift */; };
 		B7AC233623484C8200A0E254 /* UIButton+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AC233523484C8200A0E254 /* UIButton+.swift */; };
 		B7AC233A23485FC000A0E254 /* UIAlertController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AC233923485FC000A0E254 /* UIAlertController+.swift */; };
 		B7AC233E23490E6B00A0E254 /* mumtaz.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = B7AC233B23490E6B00A0E254 /* mumtaz.mp3 */; };
@@ -43,6 +44,7 @@
 		B75EC1E62348415B00F76103 /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
 		B7704A242354391C00C91547 /* Minder+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Minder+.swift"; sourceTree = "<group>"; };
 		B7704A262354490800C91547 /* Int16+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int16+.swift"; sourceTree = "<group>"; };
+		B7A645BC241010EA0052F8B8 /* BookManagedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookManagedObject.swift; sourceTree = "<group>"; };
 		B7AC233523484C8200A0E254 /* UIButton+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+.swift"; sourceTree = "<group>"; };
 		B7AC233923485FC000A0E254 /* UIAlertController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+.swift"; sourceTree = "<group>"; };
 		B7AC233B23490E6B00A0E254 /* mumtaz.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = mumtaz.mp3; sourceTree = "<group>"; };
@@ -67,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				B75EC1E62348415B00F76103 /* CoreDataHelper.swift */,
+				B7A645BC241010EA0052F8B8 /* BookManagedObject.swift */,
 				B75EC1E32348406800F76103 /* Adab.xcdatamodeld */,
 			);
 			path = Storage;
@@ -207,6 +210,7 @@
 				B75EC1D8234684BF00F76103 /* MinderCell.swift in Sources */,
 				B75EC1D6234683D100F76103 /* MinderController.swift in Sources */,
 				B75EC1C22346835A00F76103 /* AppDelegate.swift in Sources */,
+				B7A645BD241010EA0052F8B8 /* BookManagedObject.swift in Sources */,
 				B75EC1DE23469DD800F76103 /* UIColor+.swift in Sources */,
 				B726C1B12370B8C40049FC70 /* Todo+.swift in Sources */,
 			);
